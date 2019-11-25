@@ -4,6 +4,7 @@ To run the kafka producer first download kafka from https://kafka.apache.org/dow
 Unzip and open the kafka directory.
 First run zookeeper by ruuning this command: bin/zookeeper-server-start.sh config/zookeeper.properties
 <h5>To run multiserver broker: </h5>
+<ul>
 1. open config/server.properties
   a. Remove the comment '#' from #listeners=PLAINTEXT://:9092
 2. cp config/server.properties config/server-1.properties and make the following changes:
@@ -20,5 +21,5 @@ bin/kafka-server-start.sh config/server.properties
 bin/kafka-server-start.sh config/server-1.properties
 bin/kafka-server-start.sh config/server.properties
 
-
+</ul>
 Now run the gradel project.

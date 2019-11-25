@@ -5,11 +5,11 @@ Unzip and open the kafka directory.
 First run zookeeper by ruuning this command: bin/zookeeper-server-start.sh config/zookeeper.properties
 <h5>To run multiserver broker: </h5>
 
-  <li>
+  <ul>
     1. open config/server.properties</li>
-  <li>
+ <li>
     a. Remove the comment '#' from #listeners=PLAINTEXT://:9092</li>
-  <li>
+  </ul>
     <ul>
     2. cp config/server.properties config/server-1.properties and make the following changes:</li>
   <li>a. #listeners=PLAINTEXT://:9092 -> #listeners=PLAINTEXT://:9093</li>

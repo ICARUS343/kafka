@@ -4,7 +4,7 @@ To run the kafka producer first download kafka from https://kafka.apache.org/dow
 Unzip and open the kafka directory.
 First run zookeeper by ruuning this command: bin/zookeeper-server-start.sh config/zookeeper.properties
 <h5>To run multiserver broker: </h5>
-<ul>
+
   <li>
     1. open config/server.properties</li>
   <li>

@@ -3,6 +3,8 @@ import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class kafkaProducerExample {
     private final static String TOPIC = "my-example-topic";
@@ -21,7 +23,7 @@ public class kafkaProducerExample {
         return new KafkaProducer<>(props);
     }
 
-    static void runProducer(final int sendMessageCount) throws Exception {
+    static void runProducersync(final int sendMessageCount) throws Exception {
         final Producer<Long, String> producer = createProducer();
         long time = System.currentTimeMillis();
 
@@ -29,7 +31,7 @@ public class kafkaProducerExample {
             for (long index = time; index < time + sendMessageCount; index++) {
                 final ProducerRecord<Long, String> record =
                         new ProducerRecord<>(TOPIC, index,
-                                "Hello Mom " + index);
+                                "Hello sync " + index);
 
                 RecordMetadata metadata = producer.send(record).get();
 
@@ -45,14 +47,44 @@ public class kafkaProducerExample {
             producer.close();
         }
     }
+    static void runProducerasync(final int sendMessageCount) throws InterruptedException {
+        final Producer<Long, String> producer = createProducer();
+        long time = System.currentTimeMillis();
+        final CountDownLatch countDownLatch = new CountDownLatch(sendMessageCount);
+
+        try {
+            for (long index = time; index < time + sendMessageCount; index++) {
+                final ProducerRecord<Long, String> record =
+                        new ProducerRecord<>(TOPIC, index, "Hello async " + index);
+                producer.send(record, (metadata, exception) -> {
+                    long elapsedTime = System.currentTimeMillis() - time;
+                    if (metadata != null) {
+                        System.out.printf("sent record(key=%s value=%s) " +
+                                        "meta(partition=%d, offset=%d) time=%d\n",
+                                record.key(), record.value(), metadata.partition(),
+                                metadata.offset(), elapsedTime);
+                    } else {
+                        exception.printStackTrace();
+                    }
+                    countDownLatch.countDown();
+                });
+            }
+            countDownLatch.await(25, TimeUnit.SECONDS);
+        }finally {
+            producer.flush();
+            producer.close();
+        }
+    }
 
 
 
     public static void main(String... args) throws Exception {
         if (args.length == 0) {
-            runProducer(5);
+            runProducersync(5000);
+            runProducerasync(5000);
         } else {
-            runProducer(Integer.parseInt(args[0]));
+            runProducersync(Integer.parseInt(args[0]));
+            runProducerasync(Integer.parseInt(args[0]));
         }
     }
 
